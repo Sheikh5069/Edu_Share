@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileShare - Upload & Share Files</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/upload.css">
+    <link rel="stylesheet" href="styles/gallery.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>FileShare</span>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="gallery">
+                        <i class="fas fa-th-large"></i>
+                        Gallery
+                    </button>
+                    <button class="nav-btn" data-tab="upload">
+                        <i class="fas fa-plus"></i>
+                        Upload
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Gallery Tab -->
+            <section id="gallery-tab" class="tab-content active">
+                <div class="gallery-header">
+                    <h1>Shared Files</h1>
+                    <div class="gallery-controls">
+                        <div class="search-bar">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Search files...">
+                        </div>
+                        <div class="filter-controls">
+                            <select id="sort-select">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="most-liked">Most Liked</option>
+                                <option value="most-viewed">Most Viewed</option>
+                            </select>
+                            <select id="type-filter">
+                                <option value="all">All Types</option>
+                                <option value="image">Images</option>
+                                <option value="document">Documents</option>
+                                <option value="text">Text Files</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="total-files">0</span>
+                        <span class="stat-label">Files</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="total-views">0</span>
+                        <span class="stat-label">Views</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" id="total-likes">0</span>
+                        <span class="stat-label">Likes</span>
+                    </div>
+                </div>
+
+                <div id="files-grid" class="files-grid">
+                    <!-- Files will be dynamically loaded here -->
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No files uploaded yet</h3>
+                    <p>Be the first to share a file!</p>
+                    <button class="btn btn-primary" onclick="switchTab('upload')">
+                        <i class="fas fa-plus"></i>
+                        Upload File
+                    </button>
+                </div>
+            </section>
+
+            <!-- Upload Tab -->
+            <section id="upload-tab" class="tab-content">
+                <div class="upload-header">
+                    <h1>Upload File</h1>
+                    <p>Share your files with the community</p>
+                </div>
+
+                <div class="upload-container">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Drag & Drop your file here</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.txt,.pdf,.xls,.xlsx,.ppt,.pptx,.doc,.docx" multiple>
+                        <div class="supported-formats">
+                            <small>Supported formats: PNG, JPG, TXT, PDF, XLS, PPT, DOC</small>
+                        </div>
+                    </div>
+
+                    <div id="upload-form" class="upload-form" style="display: none;">
+                        <div class="file-preview" id="file-preview">
+                            <!-- File preview will be shown here -->
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="file-caption">Caption</label>
+                            <textarea id="file-caption" placeholder="Add a caption for your file..."></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="cancelUpload()">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="uploadFile()">
+                                <i class="fas fa-upload"></i>
+                                Upload File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- File Preview Modal -->
+    <div id="file-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">File Preview</h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-file-content">
+                    <!-- File content will be displayed here -->
+                </div>
+                <div class="file-info">
+                    <div class="file-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span id="modal-date">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-file"></i>
+                            <span id="modal-size">-</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-eye"></i>
+                            <span id="modal-views">0 views</span>
+                        </div>
+                    </div>
+                    <div class="file-caption" id="modal-caption">
+                        <!-- Caption will be displayed here -->
+                    </div>
+                    <div class="file-actions">
+                        <button class="action-btn like-btn" onclick="toggleLike(currentFileId)">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span id="modal-likes">0</span>
+                        </button>
+                        <button class="action-btn dislike-btn" onclick="toggleDislike(currentFileId)">
+                            <i class="fas fa-thumbs-down"></i>
+                            <span id="modal-dislikes">0</span>
+                        </button>
+                        <button class="action-btn download-btn" onclick="downloadFile(currentFileId)">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container">
+        <!-- Toast notifications will appear here -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/storage.js"></script>
+    <script src="scripts/upload.js"></script>
+    <script src="scripts/gallery.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
