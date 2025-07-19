@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Initialize the application
  */
-function initializeApp() {
-    loadFiles();
+async function initializeApp() {
+    await loadFiles();
     setupEventListeners();
-    updateStats();
+    await updateStats();
     
     // Show gallery by default
     switchTab('gallery');
@@ -208,7 +208,7 @@ function openFileModal(fileId) {
     }
     
     // Update like/dislike button states
-    updateModalButtons(fileId);
+    await updateModalButtons(fileId);
     
     // Show modal
     modal.style.display = 'block';
@@ -227,8 +227,8 @@ function closeModal() {
 /**
  * Update modal button states
  */
-function updateModalButtons(fileId) {
-    const userReactions = getUserReactions();
+async function updateModalButtons(fileId) {
+    const userReactions = await getUserReactions();
     const likeBtn = document.querySelector('.like-btn');
     const dislikeBtn = document.querySelector('.dislike-btn');
     
@@ -247,20 +247,39 @@ function updateModalButtons(fileId) {
 /**
  * Toggle like for a file
  */
-function toggleLike(fileId) {
-    const userReactions = getUserReactions();
+async function toggleLike(fileId) {
+    // Try to handle on server first
+    if (await checkServerAvailability()) {
+        const success = await handleReactionOnServer(fileId, 'like');
+        if (success) {
+            // Reload files and stats from server
+            await loadFilesFromServer();
+            await loadStatsFromServer();
+            
+            // Update UI
+            const file = files.find(f => f.id === fileId);
+            if (file && currentFileId === fileId) {
+                document.getElementById('modal-likes').textContent = file.likes;
+                document.getElementById('modal-dislikes').textContent = file.dislikes;
+                await updateModalButtons(fileId);
+            }
+            
+            renderGallery();
+            return;
+        }
+    }
+    
+    // Fall back to local storage
+    const userReactions = await getUserReactions();
     const currentReaction = userReactions[fileId];
     
-    // Update file data
     const file = files.find(f => f.id === fileId);
     if (!file) return;
     
     if (currentReaction === 'like') {
-        // Remove like
         file.likes--;
         delete userReactions[fileId];
     } else {
-        // Add like (remove dislike if exists)
         if (currentReaction === 'dislike') {
             file.dislikes--;
         }
@@ -268,15 +287,13 @@ function toggleLike(fileId) {
         userReactions[fileId] = 'like';
     }
     
-    // Save changes
     saveFiles();
     saveUserReactions(userReactions);
     
-    // Update UI
     if (currentFileId === fileId) {
         document.getElementById('modal-likes').textContent = file.likes;
         document.getElementById('modal-dislikes').textContent = file.dislikes;
-        updateModalButtons(fileId);
+        await updateModalButtons(fileId);
     }
     
     renderGallery();
@@ -286,20 +303,39 @@ function toggleLike(fileId) {
 /**
  * Toggle dislike for a file
  */
-function toggleDislike(fileId) {
-    const userReactions = getUserReactions();
+async function toggleDislike(fileId) {
+    // Try to handle on server first
+    if (await checkServerAvailability()) {
+        const success = await handleReactionOnServer(fileId, 'dislike');
+        if (success) {
+            // Reload files and stats from server
+            await loadFilesFromServer();
+            await loadStatsFromServer();
+            
+            // Update UI
+            const file = files.find(f => f.id === fileId);
+            if (file && currentFileId === fileId) {
+                document.getElementById('modal-likes').textContent = file.likes;
+                document.getElementById('modal-dislikes').textContent = file.dislikes;
+                await updateModalButtons(fileId);
+            }
+            
+            renderGallery();
+            return;
+        }
+    }
+    
+    // Fall back to local storage
+    const userReactions = await getUserReactions();
     const currentReaction = userReactions[fileId];
     
-    // Update file data
     const file = files.find(f => f.id === fileId);
     if (!file) return;
     
     if (currentReaction === 'dislike') {
-        // Remove dislike
         file.dislikes--;
         delete userReactions[fileId];
     } else {
-        // Add dislike (remove like if exists)
         if (currentReaction === 'like') {
             file.likes--;
         }
@@ -307,15 +343,13 @@ function toggleDislike(fileId) {
         userReactions[fileId] = 'dislike';
     }
     
-    // Save changes
     saveFiles();
     saveUserReactions(userReactions);
     
-    // Update UI
     if (currentFileId === fileId) {
         document.getElementById('modal-likes').textContent = file.likes;
         document.getElementById('modal-dislikes').textContent = file.dislikes;
-        updateModalButtons(fileId);
+        await updateModalButtons(fileId);
     }
     
     renderGallery();
@@ -347,7 +381,16 @@ function downloadFile(fileId) {
 /**
  * Increment view count for a file
  */
-function incrementViews(fileId) {
+async function incrementViews(fileId) {
+    // Try to increment on server first
+    if (await checkServerAvailability()) {
+        await incrementViewsOnServer(fileId);
+        // Reload stats from server
+        await loadStatsFromServer();
+        return;
+    }
+    
+    // Fall back to local storage
     const file = files.find(f => f.id === fileId);
     if (!file) return;
     
@@ -366,7 +409,14 @@ function handleSearch() {
 /**
  * Update application statistics
  */
-function updateStats() {
+async function updateStats() {
+    // Try to load from server first
+    if (await checkServerAvailability()) {
+        await loadStatsFromServer();
+        return;
+    }
+    
+    // Fall back to local calculation
     const totalFiles = files.length;
     const totalViews = files.reduce((sum, file) => sum + file.views, 0);
     const totalLikes = files.reduce((sum, file) => sum + file.likes, 0);

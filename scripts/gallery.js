@@ -5,7 +5,7 @@
 /**
  * Render the gallery with current files
  */
-function renderGallery() {
+async function renderGallery() {
     const container = document.getElementById('files-grid');
     const emptyState = document.getElementById('empty-state');
     
@@ -26,10 +26,10 @@ function renderGallery() {
     
     // Render files
     container.innerHTML = '';
-    filteredFiles.forEach(file => {
-        const fileCard = createFileCard(file);
+    for (const file of filteredFiles) {
+        const fileCard = await createFileCard(file);
         container.appendChild(fileCard);
-    });
+    }
     
     console.log(`Rendered ${filteredFiles.length} files in gallery`);
 }
@@ -80,14 +80,14 @@ function getFilteredFiles() {
 /**
  * Create a file card element
  */
-function createFileCard(file) {
+async function createFileCard(file) {
     const card = document.createElement('div');
     card.className = 'file-card';
     card.addEventListener('click', () => openFileModal(file.id));
     
     const category = getFileCategory(file.type);
     const icon = getFileIcon(file.type);
-    const userReactions = getUserReactions();
+    const userReactions = await getUserReactions();
     const userReaction = userReactions[file.id];
     
     // Create thumbnail content

@@ -9,9 +9,16 @@ const STORAGE_KEYS = {
 };
 
 /**
- * Load files from localStorage
+ * Load files from server or localStorage as fallback
  */
-function loadFiles() {
+async function loadFiles() {
+    // Try to load from server first
+    if (await checkServerAvailability()) {
+        await loadFilesFromServer();
+        return;
+    }
+    
+    // Fall back to localStorage
     try {
         const stored = localStorage.getItem(STORAGE_KEYS.FILES);
         files = stored ? JSON.parse(stored) : [];
@@ -21,7 +28,7 @@ function loadFiles() {
             return file && file.id && file.name && file.type;
         });
         
-        console.log(`Loaded ${files.length} files from storage`);
+        console.log(`Loaded ${files.length} files from local storage`);
     } catch (error) {
         console.error('Error loading files:', error);
         files = [];
@@ -51,14 +58,23 @@ function saveFiles() {
 }
 
 /**
- * Add a new file to storage
+ * Add a new file to storage (server or localStorage)
  */
-function addFile(fileData) {
+async function addFile(fileData) {
     try {
-        // Generate unique ID
-        const id = generateFileId();
+        // Try to upload to server first
+        if (await checkServerAvailability()) {
+            const fileId = await uploadFileToServer(fileData, fileData.caption);
+            if (fileId) {
+                // Reload files from server to get updated list
+                await loadFilesFromServer();
+                console.log('File uploaded to server successfully:', fileData.name);
+                return { id: fileId };
+            }
+        }
         
-        // Create file object
+        // Fall back to localStorage
+        const id = generateFileId();
         const file = {
             id: id,
             name: fileData.name,
@@ -74,10 +90,10 @@ function addFile(fileData) {
             uploader: generateUploaderId()
         };
         
-        files.unshift(file); // Add to beginning of array
+        files.unshift(file);
         
         if (saveFiles()) {
-            console.log('File added successfully:', file.name);
+            console.log('File added to local storage:', file.name);
             return file;
         }
         
@@ -123,10 +139,16 @@ function deleteFile(fileId) {
 }
 
 /**
- * Get user reactions from localStorage
+ * Get user reactions from server or localStorage
  */
-function getUserReactions() {
+async function getUserReactions() {
     try {
+        // Try to load from server first
+        if (await checkServerAvailability()) {
+            return await loadUserReactionsFromServer();
+        }
+        
+        // Fall back to localStorage
         const stored = localStorage.getItem(STORAGE_KEYS.USER_REACTIONS);
         return stored ? JSON.parse(stored) : {};
     } catch (error) {
