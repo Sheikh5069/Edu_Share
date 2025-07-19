@@ -21,7 +21,7 @@ async function initializeApp() {
     await updateStats();
     
     // Show gallery by default
-    switchTab('gallery');
+    await switchTab('gallery');
     
     console.log('FileShare application initialized');
 }
@@ -32,9 +32,9 @@ async function initializeApp() {
 function setupEventListeners() {
     // Tab navigation
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const tab = e.target.closest('.nav-btn').dataset.tab;
-            switchTab(tab);
+            await switchTab(tab);
         });
     });
     
@@ -55,7 +55,7 @@ function setupEventListeners() {
     // Search functionality
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
-        searchInput.addEventListener('input', debounce(handleSearch, 300));
+        searchInput.addEventListener('input', debounce(() => renderGallery(), 300));
     }
     
     // Filter controls
@@ -63,18 +63,18 @@ function setupEventListeners() {
     const typeFilter = document.getElementById('type-filter');
     
     if (sortSelect) {
-        sortSelect.addEventListener('change', renderGallery);
+        sortSelect.addEventListener('change', () => renderGallery());
     }
     
     if (typeFilter) {
-        typeFilter.addEventListener('change', renderGallery);
+        typeFilter.addEventListener('change', () => renderGallery());
     }
 }
 
 /**
  * Switch between tabs
  */
-function switchTab(tabName) {
+async function switchTab(tabName) {
     // Update active tab button
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -93,7 +93,7 @@ function switchTab(tabName) {
     
     // Refresh gallery if switching to it
     if (tabName === 'gallery') {
-        renderGallery();
+        await renderGallery();
     }
 }
 
@@ -154,14 +154,14 @@ function getToastIcon(type) {
 /**
  * Open file preview modal
  */
-function openFileModal(fileId) {
+async function openFileModal(fileId) {
     const file = files.find(f => f.id === fileId);
     if (!file) return;
     
     currentFileId = fileId;
     
     // Increment view count
-    incrementViews(fileId);
+    await incrementViews(fileId);
     
     const modal = document.getElementById('file-modal');
     const modalTitle = document.getElementById('modal-title');
