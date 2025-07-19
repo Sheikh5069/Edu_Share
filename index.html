@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/upload.css">
     <link rel="stylesheet" href="styles/gallery.css">
+    <link rel="stylesheet" href="styles/share.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +30,10 @@
                     <button class="nav-btn" data-tab="upload">
                         <i class="fas fa-plus"></i>
                         Upload
+                    </button>
+                    <button class="nav-btn" data-tab="share">
+                        <i class="fas fa-share-alt"></i>
+                        Share
                     </button>
                 </nav>
             </div>
@@ -91,6 +96,73 @@
                         <i class="fas fa-plus"></i>
                         Upload File
                     </button>
+                </div>
+            </section>
+
+            <!-- Share Tab -->
+            <section id="share-tab" class="tab-content">
+                <div class="share-header">
+                    <h1>Share Files</h1>
+                    <p>Export your files to share with other devices or import files from others</p>
+                </div>
+
+                <div class="share-container">
+                    <div class="share-section">
+                        <div class="share-card">
+                            <div class="share-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <h3>Export Files</h3>
+                            <p>Download all your files and data as a single file to share with other devices</p>
+                            <button class="btn btn-primary" onclick="exportAllData()">
+                                <i class="fas fa-download"></i>
+                                Export All Files
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="share-section">
+                        <div class="share-card">
+                            <div class="share-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h3>Import Files</h3>
+                            <p>Upload a file exported from another device to access those files here</p>
+                            <div class="import-area" id="import-area">
+                                <input type="file" id="import-input" accept=".json" style="display: none;">
+                                <button class="btn btn-secondary" onclick="document.getElementById('import-input').click()">
+                                    <i class="fas fa-upload"></i>
+                                    Choose Export File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="share-section">
+                        <div class="share-card">
+                            <div class="share-icon">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <h3>Share Individual File</h3>
+                            <p>Generate a shareable link for individual files (coming soon)</p>
+                            <button class="btn btn-secondary" disabled>
+                                <i class="fas fa-link"></i>
+                                Coming Soon
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="share-info">
+                    <div class="info-card">
+                        <h4>How File Sharing Works</h4>
+                        <ul>
+                            <li><strong>Export:</strong> Downloads all your files and data as a single JSON file</li>
+                            <li><strong>Import:</strong> Upload the exported file on another device to access the same files</li>
+                            <li><strong>Privacy:</strong> Files are stored locally on each device - no cloud storage</li>
+                            <li><strong>Compatibility:</strong> Works across all browsers and devices</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
 
@@ -205,6 +277,7 @@
     <script src="scripts/storage.js"></script>
     <script src="scripts/upload.js"></script>
     <script src="scripts/gallery.js"></script>
+    <script src="scripts/share.js"></script>
     <script src="scripts/main.js"></script>
 </body>
 </html>
