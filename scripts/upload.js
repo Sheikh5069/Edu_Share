@@ -7,12 +7,12 @@ const SUPPORTED_TYPES = {
     'image/png': { category: 'image', maxSize: 10 * 1024 * 1024, icon: 'image' },
     'image/jpeg': { category: 'image', maxSize: 10 * 1024 * 1024, icon: 'image' },
     'image/jpg': { category: 'image', maxSize: 10 * 1024 * 1024, icon: 'image' },
-    'text/plain': { category: 'text', maxSize: 1 * 1024 * 1024, icon: 'file-alt' },
-    'application/pdf': { category: 'document', maxSize: 20 * 1024 * 1024, icon: 'file-pdf' },
+    'text/plain': { category: 'text', maxSize: 10 * 1024 * 1024, icon: 'file-alt' },
+    'application/pdf': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-pdf' },
     'application/vnd.ms-excel': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-excel' },
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-excel' },
-    'application/vnd.ms-powerpoint': { category: 'document', maxSize: 20 * 1024 * 1024, icon: 'file-powerpoint' },
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation': { category: 'document', maxSize: 20 * 1024 * 1024, icon: 'file-powerpoint' },
+    'application/vnd.ms-powerpoint': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-powerpoint' },
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-powerpoint' },
     'application/msword': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-word' },
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': { category: 'document', maxSize: 10 * 1024 * 1024, icon: 'file-word' }
 };
